@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Math Tutor – AI Math Help for Grades 2–12</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #3b82f6;
+    --indigo: #6366f1;
+    --purple: #8b5cf6;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --orange: #f97316;
+    --pink: #ec4899;
+    --red: #ef4444;
+    --dark: #1e1b4b;
+    --light: #f0f4ff;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #fafbff;
+    color: #1e1b4b;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 40px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid #e0e7ff;
+    box-shadow: 0 2px 20px rgba(99,102,241,0.08);
+  }
+  .nav-logo { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; color: var(--indigo); }
+  .nav-logo span { color: var(--orange); }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; transition: color .2s; }
+  .nav-links a:hover { color: var(--indigo); }
+  .nav-cta {
+    background: var(--indigo); color: white; padding: 10px 24px;
+    border-radius: 50px; font-weight: 700; text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.4);
+  }
+  .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.5); color: white; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    background: linear-gradient(160deg, #eef2ff 0%, #faf5ff 50%, #fff7ed 100%);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(249,115,22,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(16,185,129,0.08) 0%, transparent 50%);
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white; border: 2px solid #e0e7ff;
+    padding: 6px 16px; border-radius: 50px;
+    font-size: 0.85rem; font-weight: 700; color: var(--indigo);
+    margin-bottom: 24px; position: relative;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.1);
+    animation: fadeDown 0.6s ease both;
+  }
+  .hero-badge .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+
+  .hero h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 800; line-height: 1.15;
+    color: var(--dark);
+    position: relative;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+  .hero h1 .highlight {
+    color: var(--indigo);
+    position: relative; display: inline-block;
+  }
+  .hero h1 .highlight::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, var(--orange), var(--yellow));
+    border-radius: 4px;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    color: #6b7280; max-width: 560px; margin: 20px auto 0;
+    line-height: 1.7; font-weight: 600;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+
+  .hero-btns {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    margin-top: 36px;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+    color: white; padding: 16px 36px; border-radius: 50px;
+    font-size: 1.1rem; font-weight: 800; text-decoration: none;
+    box-shadow: 0 6px 24px rgba(99,102,241,0.45);
+    transition: transform .2s, box-shadow .2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(99,102,241,0.55); color: white; }
+  .btn-secondary {
+    background: white; color: var(--indigo); padding: 16px 32px;
+    border-radius: 50px; font-size: 1.05rem; font-weight: 700;
+    text-decoration: none; border: 2px solid #e0e7ff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    transition: transform .2s, box-shadow .2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-secondary:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); color: var(--indigo); }
+
+  .hero-note {
+    margin-top: 14px; font-size: 0.85rem; color: #9ca3af; font-weight: 600;
+    animation: fadeUp 0.7s ease 0.4s both;
+  }
+
+  /* Floating emojis */
+  .floaties { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .floatie {
+    position: absolute; font-size: 2rem; opacity: 0.15;
+    animation: float 6s ease-in-out infinite;
+  }
+  .floatie:nth-child(1) { top: 15%; left: 8%; animation-delay: 0s; font-size: 2.5rem; }
+  .floatie:nth-child(2) { top: 25%; right: 10%; animation-delay: 1s; }
+  .floatie:nth-child(3) { bottom: 30%; left: 12%; animation-delay: 2s; font-size: 1.8rem; }
+  .floatie:nth-child(4) { bottom: 20%; right: 8%; animation-delay: 0.5s; font-size: 2.2rem; }
+  .floatie:nth-child(5) { top: 60%; left: 5%; animation-delay: 3s; }
+  .floatie:nth-child(6) { top: 40%; right: 5%; animation-delay: 1.5s; font-size: 1.6rem; }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--dark);
+    padding: 28px 40px;
+    display: flex; justify-content: center; gap: 60px; flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; color: white; }
+  .stat-num span { color: var(--yellow); }
+  .stat-label { font-size: 0.85rem; color: #a5b4fc; font-weight: 600; margin-top: 2px; }
+
+  /* ── FEATURES ── */
+  .section { padding: 90px 24px; }
+  .section-label {
+    text-align: center; font-size: 0.85rem; font-weight: 800;
+    color: var(--indigo); text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Baloo 2', cursive; font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800; text-align: center; color: var(--dark);
+    margin-bottom: 12px; line-height: 1.2;
+  }
+  .section-sub {
+    text-align: center; color: #6b7280; font-size: 1.05rem;
+    max-width: 520px; margin: 0 auto 52px; font-weight: 600; line-height: 1.6;
+  }
+
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px; max-width: 1100px; margin: 0 auto;
+  }
+  .feature-card {
+    background: white; border-radius: 20px; padding: 32px;
+    border: 2px solid #e0e7ff;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.06);
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    border-radius: 20px 20px 0 0;
+  }
+  .feature-card:nth-child(1)::before { background: linear-gradient(90deg, var(--indigo), var(--purple)); }
+  .feature-card:nth-child(2)::before { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+  .feature-card:nth-child(3)::before { background: linear-gradient(90deg, var(--green), #34d399); }
+  .feature-card:nth-child(4)::before { background: linear-gradient(90deg, var(--pink), #f43f5e); }
+  .feature-card:nth-child(5)::before { background: linear-gradient(90deg, var(--blue), var(--indigo)); }
+  .feature-card:nth-child(6)::before { background: linear-gradient(90deg, var(--yellow), var(--orange)); }
+  .feature-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(99,102,241,0.14); border-color: #c7d2fe; }
+
+  .feature-icon { font-size: 2.8rem; margin-bottom: 16px; display: block; }
+  .feature-title { font-family: 'Baloo 2', cursive; font-size: 1.25rem; font-weight: 700; color: var(--dark); margin-bottom: 10px; }
+  .feature-desc { color: #6b7280; font-size: 0.95rem; line-height: 1.65; font-weight: 600; }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    background: linear-gradient(160deg, #1e1b4b 0%, #312e81 100%);
+    padding: 90px 24px;
+  }
+  .how-section .section-title { color: white; }
+  .how-section .section-sub { color: #a5b4fc; }
+  .how-section .section-label { color: #818cf8; }
+
+  .steps { display: flex; gap: 0; max-width: 900px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+  .step {
+    flex: 1; min-width: 200px; text-align: center; padding: 24px 20px;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute; right: -10px; top: 38px;
+    font-size: 1.5rem; color: #6366f1;
+  }
+  .step-num {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 800; color: white;
+    margin: 0 auto 16px;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.5);
+  }
+  .step-title { color: white; font-weight: 800; font-size: 1rem; margin-bottom: 8px; }
+  .step-desc { color: #a5b4fc; font-size: 0.88rem; line-height: 1.6; font-weight: 600; }
+
+  /* ── GRADES ── */
+  .grades-section { background: #f8faff; padding: 90px 24px; }
+  .grades-grid {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    max-width: 700px; margin: 0 auto;
+  }
+  .grade-chip {
+    background: white; border: 2px solid #e0e7ff; border-radius: 50px;
+    padding: 10px 24px; font-weight: 800; color: var(--dark);
+    font-size: 1rem; transition: all .2s; cursor: default;
+    box-shadow: 0 2px 10px rgba(99,102,241,0.08);
+  }
+  .grade-chip:hover { background: var(--indigo); color: white; border-color: var(--indigo); transform: translateY(-3px); }
+  .grade-chip.active { background: var(--indigo); color: white; border-color: var(--indigo); }
+
+  /* ── PRICING ── */
+  .pricing-section { padding: 90px 24px; }
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px; max-width: 900px; margin: 0 auto;
+  }
+  .pricing-card {
+    background: white; border-radius: 24px; padding: 40px 32px;
+    border: 2px solid #e0e7ff; text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: transform .25s;
+    position: relative; overflow: hidden;
+  }
+  .pricing-card:hover { transform: translateY(-6px); }
+  .pricing-card.featured {
+    border-color: var(--indigo);
+    box-shadow: 0 8px 40px rgba(99,102,241,0.2);
+    transform: scale(1.04);
+  }
+  .pricing-card.featured:hover { transform: scale(1.04) translateY(-4px); }
+  .popular-badge {
+    position: absolute; top: 16px; right: -28px;
+    background: linear-gradient(135deg, var(--orange), var(--yellow));
+    color: white; font-size: 0.75rem; font-weight: 800;
+    padding: 4px 40px; transform: rotate(45deg);
+    box-shadow: 0 2px 8px rgba(249,115,22,0.4);
+  }
+  .plan-name { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+  .plan-price { font-family: 'Baloo 2', cursive; font-size: 3rem; font-weight: 800; color: var(--indigo); line-height: 1; }
+  .plan-price span { font-size: 1rem; color: #9ca3af; font-family: 'Nunito', sans-serif; }
+  .plan-desc { color: #6b7280; font-size: 0.9rem; margin: 12px 0 24px; font-weight: 600; }
+  .plan-features { list-style: none; text-align: left; margin-bottom: 32px; }
+  .plan-features li { padding: 6px 0; font-size: 0.92rem; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 8px; }
+  .plan-features li::before { content: '✅'; font-size: 0.85rem; }
+  .plan-features li.no::before { content: '❌'; }
+  .plan-features li.no { color: #9ca3af; }
+  .plan-btn {
+    display: block; width: 100%; padding: 14px;
+    border-radius: 50px; font-weight: 800; font-size: 1rem;
+    text-decoration: none; transition: transform .2s, box-shadow .2s;
+    border: none; cursor: pointer;
+  }
+  .plan-btn.primary {
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+    color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+  }
+  .plan-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,0.5); }
+  .plan-btn.outline { background: white; color: var(--indigo); border: 2px solid var(--indigo); }
+  .plan-btn.outline:hover { background: #eef2ff; transform: translateY(-2px); }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-section { background: #f8faff; padding: 90px 24px; }
+  .testimonials-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px; max-width: 1000px; margin: 0 auto;
+  }
+  .testimonial-card {
+    background: white; border-radius: 20px; padding: 28px;
+    border: 2px solid #e0e7ff;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.06);
+  }
+  .testimonial-stars { color: var(--yellow); font-size: 1.1rem; margin-bottom: 12px; }
+  .testimonial-text { color: #374151; font-size: 0.95rem; line-height: 1.7; font-weight: 600; margin-bottom: 16px; font-style: italic; }
+  .testimonial-author { display: flex; align-items: center; gap: 12px; }
+  .author-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+  .author-name { font-weight: 800; color: var(--dark); font-size: 0.9rem; }
+  .author-role { color: #9ca3af; font-size: 0.8rem; font-weight: 600; }
+
+  /* ── CTA BOTTOM ── */
+  .cta-section {
+    background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 100%);
+    padding: 90px 24px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 60%);
+  }
+  .cta-section h2 { font-family: 'Baloo 2', cursive; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; color: white; margin-bottom: 16px; position: relative; }
+  .cta-section p { color: #c7d2fe; font-size: 1.1rem; font-weight: 600; margin-bottom: 36px; position: relative; }
+  .cta-btn {
+    background: white; color: var(--indigo); padding: 18px 48px;
+    border-radius: 50px; font-size: 1.15rem; font-weight: 800;
+    text-decoration: none; display: inline-block;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+    transition: transform .2s, box-shadow .2s; position: relative;
+  }
+  .cta-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); color: var(--indigo); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--dark); color: #a5b4fc;
+    padding: 40px 24px; text-align: center;
+    font-size: 0.9rem; font-weight: 600;
+  }
+  footer a { color: #818cf8; text-decoration: none; }
+  footer a:hover { color: white; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 640px) {
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    .stats-bar { gap: 30px; padding: 24px 20px; }
+    .step:not(:last-child)::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">🎓 Smart<span>Math</span>Tutor</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="https://smart-tutor-ai.streamlit.app" style="color:var(--indigo); font-weight:700; text-decoration:none; padding:10px 20px; border-radius:50px; border:2px solid #e0e7ff; transition:all .2s;" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='transparent'">Login</a>
+    <a href="https://smart-tutor-ai.streamlit.app" class="nav-cta">Sign Up Free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="floaties">
+    <div class="floatie">➕</div>
+    <div class="floatie">📐</div>
+    <div class="floatie">🔢</div>
+    <div class="floatie">✏️</div>
+    <div class="floatie">📊</div>
+    <div class="floatie">🧮</div>
+  </div>
+
+  <div class="hero-badge">
+    <span class="dot"></span>
+    AI-Powered Math Tutoring for Grades 2–12
+  </div>
+
+  <h1>
+    Struggling with<br>
+    <span class="highlight">Math Homework?</span><br>
+    We've Got You!
+  </h1>
+
+  <p class="hero-sub">
+    Get instant step-by-step AI explanations. Upload a photo of any math problem and get help in seconds. Designed for students Grades 2–12, loved by parents.
+  </p>
+
+  <div class="hero-btns">
+    <a href="https://smart-tutor-ai.streamlit.app" class="btn-primary">🚀 Sign Up Free</a>
+    <a href="https://smart-tutor-ai.streamlit.app" class="btn-secondary">🔐 Login</a>
+  </div>
+
+  <p class="hero-note">✅ Free plan available • No credit card required • Grades 2–12</p>
+  <p style="margin-top:10px; font-size:0.85rem; color:#6b7280; font-weight:600; animation: fadeUp 0.7s ease 0.5s both;">
+    Already have an account? <a href="https://smart-tutor-ai.streamlit.app" style="color:var(--indigo); font-weight:800; text-decoration:none;">Login here →</a>
+  </p>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-num">Grades <span>2–12</span></div>
+    <div class="stat-label">All grade levels covered</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num"><span>3</span> Modes</div>
+    <div class="stat-label">Socratic, Direct & Hints</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num"><span>24/7</span></div>
+    <div class="stat-label">Available anytime</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num"><span>$0</span> to start</div>
+    <div class="stat-label">Free plan forever</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">Why Smart Math Tutor?</div>
+  <h2 class="section-title">Everything Your Child Needs to Succeed</h2>
+  <p class="section-sub">From homework help to exam prep — all powered by AI that teaches, not just answers.</p>
+
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <span class="feature-icon">📸</span>
+      <div class="feature-title">Upload Any Math Problem</div>
+      <p class="feature-desc">Take a photo of any handwritten or printed math problem. Our AI reads it instantly and explains the solution step by step.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🤖</span>
+      <div class="feature-title">3 Teaching Styles</div>
+      <p class="feature-desc">Choose Socratic (guided questions), Direct (full solution), or Hints mode. Adapts to how your child learns best.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">📊</span>
+      <div class="feature-title">Progress Tracking</div>
+      <p class="feature-desc">See exactly which topics your child masters and where they need more practice. Detailed charts and streaks keep kids motivated.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">✍️</span>
+      <div class="feature-title">Digital Whiteboard</div>
+      <p class="feature-desc">Kids can draw their solutions on the digital canvas and get AI feedback on their handwritten work — just like a real tutor.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🔢</span>
+      <div class="feature-title">Times Tables Practice</div>
+      <p class="feature-desc">204 multiplication problems across Grades 2–4. Zero AI cost — instant feedback. Perfect for building math fluency.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">👩‍🏫</span>
+      <div class="feature-title">Live Teacher Help</div>
+      <p class="feature-desc">Request live help from a real teacher when AI isn't enough. Teachers can monitor student progress and provide personalized guidance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-label" style="color:#818cf8">Simple Steps</div>
+  <h2 class="section-title">How It Works</h2>
+  <p class="section-sub" style="color:#a5b4fc">Getting math help has never been this easy</p>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <div class="step-title">Sign Up Free</div>
+      <p class="step-desc">Create your account in 30 seconds. No credit card needed.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">2</div>
+      <div class="step-title">Type or Upload</div>
+      <p class="step-desc">Type your question or snap a photo of your homework.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">3</div>
+      <div class="step-title">Get Explanation</div>
+      <p class="step-desc">AI explains step by step in a way kids actually understand.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">4</div>
+      <div class="step-title">Track Progress</div>
+      <p class="step-desc">Watch your child's skills grow with detailed reports.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GRADES -->
+<section class="grades-section">
+  <div class="section-label">Coverage</div>
+  <h2 class="section-title">Built for Every Grade Level</h2>
+  <p class="section-sub">Aligned to common curriculum standards. From basic addition to advanced algebra & geometry.</p>
+
+  <div class="grades-grid">
+    <div class="grade-chip active">Grade 2</div>
+    <div class="grade-chip">Grade 3</div>
+    <div class="grade-chip">Grade 4</div>
+    <div class="grade-chip">Grade 5</div>
+    <div class="grade-chip">Grade 6</div>
+    <div class="grade-chip">Grade 7</div>
+    <div class="grade-chip">Grade 8</div>
+    <div class="grade-chip">Grade 9</div>
+    <div class="grade-chip">Grade 10</div>
+    <div class="grade-chip">Grade 11</div>
+    <div class="grade-chip">Grade 12</div>
+  </div>
+
+  <p style="text-align:center; margin-top:32px; color:#6b7280; font-weight:600; font-size:0.95rem;">
+    📚 Addition • Fractions • Decimals • Algebra • Geometry • Trigonometry • Statistics • Pre-Calculus
+  </p>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="section-label">Simple Pricing</div>
+  <h2 class="section-title">Start Free, Upgrade Anytime</h2>
+  <p class="section-sub">No hidden fees. Cancel anytime. Less than a single tutoring session.</p>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="plan-name">🆓 Free</div>
+      <div class="plan-price">$0<span>/month</span></div>
+      <p class="plan-desc">Perfect for trying it out</p>
+      <ul class="plan-features">
+        <li>3 questions per day</li>
+        <li>Text input only</li>
+        <li>Direct mode</li>
+        <li class="no">Progress tracking</li>
+        <li class="no">Image upload</li>
+        <li class="no">Teacher help</li>
+      </ul>
+      <a href="https://smart-tutor-ai.streamlit.app" class="plan-btn outline">Get Started Free</a>
+    </div>
+
+    <div class="pricing-card featured">
+      <div class="popular-badge">POPULAR</div>
+      <div class="plan-name">⭐ Pro</div>
+      <div class="plan-price">$14.99<span>/month</span></div>
+      <p class="plan-desc">Best for regular homework help</p>
+      <ul class="plan-features">
+        <li>Unlimited questions</li>
+        <li>📸 Photo upload</li>
+        <li>All 3 teaching modes</li>
+        <li>Progress dashboard</li>
+        <li>Digital whiteboard</li>
+        <li>Daily practice</li>
+      </ul>
+      <a href="https://smart-tutor-ai.streamlit.app" class="plan-btn primary">Start Pro →</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="plan-name">👨‍👩‍👧 Family</div>
+      <div class="plan-price">$24.99<span>/month</span></div>
+      <p class="plan-desc">For families with multiple kids</p>
+      <ul class="plan-features">
+        <li>Everything in Pro</li>
+        <li>Up to 4 children</li>
+        <li>Parent reports</li>
+        <li>👩‍🏫 Teacher dashboard</li>
+        <li>Live teacher help</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="https://smart-tutor-ai.streamlit.app" class="plan-btn outline">Start Family →</a>
+    </div>
+
+    <!-- Hybrid Plan as 4th card -->
+    <div class="pricing-card" style="border-color:#10b981; box-shadow:0 8px 40px rgba(16,185,129,0.2); position:relative; overflow:hidden;">
+      <div style="position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(90deg,#10b981,#34d399);"></div>
+      <div style="position:absolute; top:16px; right:-28px; background:linear-gradient(135deg,#10b981,#34d399); color:white; font-size:0.75rem; font-weight:800; padding:4px 40px; transform:rotate(45deg); box-shadow:0 2px 8px rgba(16,185,129,0.4);">NEW</div>
+      <div class="plan-name">👩‍🏫 Hybrid Tutor</div>
+      <div class="plan-price" style="color:#10b981;">$25<span>/month</span></div>
+      <div style="display:inline-flex; align-items:center; gap:6px; background:#fef9c3; border:2px solid #fde047; border-radius:50px; padding:5px 14px; margin:8px 0 4px;">
+        <span>🎓</span>
+        <span style="font-weight:800; color:#854d0e; font-size:0.9rem;">Grades 2–8 Only</span>
+      </div>
+      <p class="plan-desc">AI + Real Teacher every month</p>
+      <ul class="plan-features">
+        <li>Everything in Pro plan</li>
+        <li>🕐 2 hrs live teacher/month</li>
+        <li>👩‍🏫 Dedicated teacher</li>
+        <li>📅 Schedule sessions</li>
+        <li>✍️ Teacher reviews homework</li>
+        <li>📊 Personalized reports</li>
+        <li>📧 Direct teacher messaging</li>
+      </ul>
+      <a href="https://smart-tutor-ai.streamlit.app" class="plan-btn primary" style="background:linear-gradient(135deg,#10b981,#059669); box-shadow:0 4px 20px rgba(16,185,129,0.4);">Get Hybrid Plan →</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="section-label">What Parents Say</div>
+  <h2 class="section-title">Loved by Families</h2>
+  <p class="section-sub">Real results for real kids — from parents just like you.</p>
+
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+      <p class="testimonial-text">"My 3rd grader went from crying over math homework to actually enjoying it. The step-by-step explanations are exactly what she needed!"</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:#fef3c7;">👩</div>
+        <div>
+          <div class="author-name">Sarah M.</div>
+          <div class="author-role">Parent of Grade 3 student</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+      <p class="testimonial-text">"The photo upload feature is a game changer. My son just takes a picture of his homework and gets help instantly. Way better than YouTube!"</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:#dbeafe;">👨</div>
+        <div>
+          <div class="author-name">James K.</div>
+          <div class="author-role">Parent of Grade 6 student</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+      <p class="testimonial-text">"I use the Socratic mode so my daughter figures out the answer herself. She's building real confidence in math now. Worth every penny!"</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:#d1fae5;">👩</div>
+        <div>
+          <div class="author-name">Priya R.</div>
+          <div class="author-role">Parent of Grade 5 student</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to Transform Math Time? 🚀</h2>
+  <p>Join families who are making homework stress-free.<br>Start free today — no credit card needed.</p>
+  <a href="https://smart-tutor-ai.streamlit.app" class="cta-btn">🎓 Start Free Now →</a>
+  <p style="margin-top:20px; color:#a5b4fc; font-size:0.9rem; position:relative;">
+    Free plan • Instant access • Cancel anytime
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p style="font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:white; margin-bottom:12px;">🎓 SmartMathTutor</p>
+  <p style="margin-bottom:12px;">AI-powered math tutoring for Grades 2–12</p>
+  <p>
+    <a href="https://smart-tutor-ai.streamlit.app">App</a> •
+    <a href="/cdn-cgi/l/email-protection#4c3f393c3c233e380c3f212d3e38212d3824383938233e62233e2b"><span class="__cf_email__" data-cfemail="8ffcfaffffe0fdfbcffce2eefdfbe2eefbe7fbfafbe0fda1e0fde8">[email&#160;protected]</span></a> •
+    <a href="#">Privacy Policy</a> •
+    <a href="#">Terms of Service</a>
+  </p>
+  <p style="margin-top:16px; color:#6b7280; font-size:0.8rem;">© 2026 SmartMathTutor.org — All rights reserved</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Grade chip toggle
+  document.que
